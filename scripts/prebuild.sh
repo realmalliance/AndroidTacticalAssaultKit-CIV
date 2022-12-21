@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Be verbose
 set -x
 
@@ -19,18 +21,18 @@ tar xf ../depends/LASzip-3.4.3-mod.tar.gz         -C ../ &
 wait
 
 # Make the third party parts in parallel
-make -C ../takthirdparty \
-	TARGET=android-armeabi-v7a GDAL_USE_KDU=no \
-	build_spatialite \
-	build_commoncommo \
-	build_gdal \
-	build_assimp &
-make -C ../takthirdparty \
-	TARGET=android-arm64-v8a GDAL_USE_KDU=no \
-	build_spatialite \
-	build_commoncommo \
-	build_gdal \
-	build_assimp &
+# make -C ../takthirdparty \
+# 	TARGET=android-armeabi-v7a GDAL_USE_KDU=no \
+# 	build_spatialite \
+# 	build_commoncommo \
+# 	build_gdal \
+# 	build_assimp &
+# make -C ../takthirdparty \
+# 	TARGET=android-arm64-v8a GDAL_USE_KDU=no \
+# 	build_spatialite \
+# 	build_commoncommo \
+# 	build_gdal \
+# 	build_assimp &
 make -C ../takthirdparty \
 	TARGET=android-x86 GDAL_USE_KDU=no \
 	build_spatialite \
@@ -47,16 +49,16 @@ conan profile update settings.compiler.version=8 default
 # install TTP conan packages
 pushd ../takthirdparty
 # add links to builds to the root
-ln -sf builds/android-armeabi-v7a-release android-armeabi-v7a-release
-ln -sf builds/android-arm64-v8a-release android-arm64-v8a-release
+# ln -sf builds/android-armeabi-v7a-release android-armeabi-v7a-release
+# ln -sf builds/android-arm64-v8a-release android-arm64-v8a-release
 ln -sf builds/android-x86-release android-x86-release
 
 cd ci-support
 # install the packages locally
 
 # conan
-conan export-pkg . -s arch=armv8 -s os=Android -s os.api_level=29 -f
-conan export-pkg . -s arch=armv7 -s os=Android -s os.api_level=29 -f
+# conan export-pkg . -s arch=armv8 -s os=Android -s os.api_level=29 -f
+# conan export-pkg . -s arch=armv7 -s os=Android -s os.api_level=29 -f
 conan export-pkg . -s arch=x86   -s os=Android -s os.api_level=29 -f
 
 # Install TTP maven package
@@ -74,7 +76,8 @@ popd
 
 # build and install LASzip package
 pushd ../LASzip
-ANDROID_ABIS="arm64-v8a armeabi-v7a x86"
+# ANDROID_ABIS="arm64-v8a armeabi-v7a x86"
+ANDROID_ABIS="x86"
 for LASZIP_ANDROID_ABI in ${ANDROID_ABIS} ;
 do
     mkdir -p build-android-${LASZIP_ANDROID_ABI}
@@ -95,7 +98,8 @@ popd
 
 # build and install libLAS package
 pushd ../libLAS
-ANDROID_ABIS="arm64-v8a armeabi-v7a x86"
+# ANDROID_ABIS="arm64-v8a armeabi-v7a x86"
+ANDROID_ABIS="x86"
 for LIBLAS_ANDROID_ABI in ${ANDROID_ABIS} ;
 do
     mkdir -p build-android-${LIBLAS_ANDROID_ABI}
@@ -109,8 +113,8 @@ done
 
 cd ci-support
 # publish to conan
-conan export-pkg . -s arch=armv8 -s os=Android -s os.api_level=29 -s compiler.version="8" -f
-conan export-pkg . -s arch=armv7 -s os=Android -s os.api_level=29 -s compiler.version="8" -f
+# conan export-pkg . -s arch=armv8 -s os=Android -s os.api_level=29 -s compiler.version="8" -f
+# conan export-pkg . -s arch=armv7 -s os=Android -s os.api_level=29 -s compiler.version="8" -f
 conan export-pkg . -s arch=x86   -s os=Android -s os.api_level=29 -s compiler.version="8" -f
 
 # publish to maven
