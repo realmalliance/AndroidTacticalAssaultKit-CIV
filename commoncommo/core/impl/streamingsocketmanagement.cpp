@@ -590,18 +590,14 @@ bool StreamingSocketManagement::connectionThreadCheckSsl(ConnectionContext *ctx)
             throw SocketException(netinterfaceenums::ERR_CONN_SSL_NO_PEER_CERT,
                                   "server did not provide a certificate");
 
-
-        char szSubject[256] = {0};
-        X509_NAME *pName = X509_get_subject_name(pX509);
-
-        const char * buf = X509_NAME_oneline(gCertName, 0, 0);
-        InternalUtils::logprintf(logger, CommoLogger::LEVEL_DEBUG, "Client\t: %s\n", buf);
-          
+        X509_NAME *pName = X509_get_subject_name(cert);
         if (pName) {
+          char szSubject[256] = {0};
+          const char * buf = X509_NAME_oneline(pName, 0, 0);
+          InternalUtils::logprintf(logger, CommoLogger::LEVEL_DEBUG, "Client\t: %s\n", buf);
           X509_NAME_oneline(pName, szSubject, sizeof(szSubject));
+          InternalUtils::logprintf(logger, CommoLogger::LEVEL_DEBUG, "SSL Certificate: %s", szSubject);
         }
-        InternalUtils::logprintf(logger, CommoLogger::LEVEL_DEBUG, "SSL Certificate: %s", szSubject);
-
 
         bool certOk = ctx->ssl->certChecker->checkCert(cert);
         X509_free(cert);
