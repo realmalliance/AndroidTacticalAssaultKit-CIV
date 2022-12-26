@@ -608,7 +608,7 @@ bool StreamingSocketManagement::connectionThreadCheckSsl(ConnectionContext *ctx)
 
         if (!certOk) {
             int vResult = ctx->ssl->certChecker->getLastErrorCode();
-            InternalUtils::logprintf(logger, CommoLogger::LEVEL_DEBUG, "Server cert verification failed: %d - check truststore for this connection", vResult);
+            InternalUtils::logprintf(logger, CommoLogger::LEVEL_DEBUG, "!!!Server cert verification failed: %d - check truststore for this connection", vResult);
             throw SocketException(netinterfaceenums::ERR_CONN_SSL_PEER_CERT_NOT_TRUSTED,
                                   "server certificate failed verification - check truststore");
         }
